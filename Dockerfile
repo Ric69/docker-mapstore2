@@ -28,7 +28,7 @@ RUN if [ "$TOMCAT_EXTRAS" = false ]; then \
     ;fi
 
 # Customize Tomcat
-ARG INCLUDE_MS_WAR="true"
+ARG INCLUDE_MS_WAR="false"
 ENV INCLUDE_MS_WAR "${INCLUDE_MS_WAR}"
 ARG APP_NAME=mapstore
 RUN if [ "$INCLUDE_MS_WAR" = true ]; then \
