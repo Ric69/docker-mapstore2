@@ -14,6 +14,9 @@ RUN  apt-get -y update \
      && apt-get -y install vim \
      && rm -rf /var/lib/apt/lists/*
 
+ENV RESOURCES_DIR="/tmp/resources"
+ADD resources "$RESOURCES_DIR"
+
 # Tomcat specific stuff
 ENV CATALINA_BASE "$CATALINA_HOME"
 ENV JAVA_OPTS="${JAVA_OPTS}  -Xms512m -Xmx512m -XX:MaxPermSize=128m"
@@ -25,8 +28,13 @@ RUN if [ "$TOMCAT_EXTRAS" = false ]; then \
     ;fi
 
 # Customize Tomcat
+ARG INCLUDE_MS_WAR="true"
+ENV INCLUDE_MS_WAR "${INCLUDE_MS_WAR}"
 ARG APP_NAME=mapstore
-COPY ./mapstore.war "${CATALINA_BASE}/webapps/${APP_NAME}.war"
+RUN if [ "$INCLUDE_MS_WAR" = true ]; then \
+      mv "${RESOURCES_DIR}/mapstore.war" \
+      "${CATALINA_BASE}/webapps/${APP_NAME}.war"; \
+    fi;
 
 # Customize GeoServer datasource properties
 ADD geostore-datasource-ovr.properties "${CATALINA_BASE}/conf/"
